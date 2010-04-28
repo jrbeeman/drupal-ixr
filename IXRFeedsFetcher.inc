@@ -8,7 +8,8 @@ class IXRFeedsBatch extends FeedsImportBatch {
   protected $path;
   protected $service;
 
-  public function __construct($url, $path, $service) {
+  public function __construct($protocol, $url, $path, $service) {
+    $this->protocol = $protocol;
     $this->url = $url;
     $this->path = $path;
     $this->service = $service;
@@ -16,7 +17,12 @@ class IXRFeedsBatch extends FeedsImportBatch {
   }
 
   public function getRaw() {
-    $client = ixr_create_clientssl($this->url, $this->path);
+    if ($this->protocol == 'http') {
+      $client = ixr_create_client($this->url, $this->path);
+    }
+    if ($this->protocol == 'https') {
+      $client = ixr_create_clientssl($this->url, $this->path);
+    }
     $client->query($this->service);
     $response = $client->getResponse();
     return $response;
@@ -26,12 +32,20 @@ class IXRFeedsBatch extends FeedsImportBatch {
 class IXRFeedsFetcher extends FeedsFetcher {
   public function fetch(FeedsSource $source) {
     $source_config = $source->getConfigFor($this);
-    return new IXRFeedsBatch($source_config['server'], $source_config['path'], $source_config['service']);
+    return new IXRFeedsBatch($source_config['protocol'], $source_config['server'], $source_config['path'], $source_config['service']);
   }
 
   public function sourceForm($source_config) {
     $form = array();
-    // When renaming, do not forget feeds_vews_handler_field_source class.
+    $form['protocol'] = array(
+      '#type' => 'select',
+      '#title' => t('Protocol'),
+      '#options' => array(
+        'http' => t('HTTP'),
+        'https' => t('HTTPS (SSL)'),
+      ),
+      '#default_value' => isset($source_config['protocol']) ? $source_config['protocol'] : '',
+    );
     $form['server'] = array(
       '#type' => 'textfield',
       '#title' => t('Server name'),
