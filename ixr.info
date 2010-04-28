@@ -1,0 +1,7 @@
+; $Id$
+name = "IXR"
+description = "Provides a set of wrapper functions for using the full Incutio XML-RPC (IXR) Library"
+version = 6.x-1.61-1
+package = "alt^I eLearning Platform" 
+core = 6.x
+php = 5.2
