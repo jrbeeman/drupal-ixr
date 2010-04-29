@@ -2,6 +2,7 @@
 
 /**
  * Fetches feeds using IXR XML-RPC library
+ * @todo Provide mechanism to pass arguments through to service.
  */
 class IXRFeedsBatch extends FeedsImportBatch {
   protected $domain;
@@ -23,9 +24,11 @@ class IXRFeedsBatch extends FeedsImportBatch {
     if ($this->protocol == 'https') {
       $client = ixr_create_clientssl($this->url, $this->path);
     }
-    $client->query($this->service);
-    $response = $client->getResponse();
-    return $response;
+    if ($this->service) {
+      $client->query($this->service);
+      $response = $client->getResponse();
+      return $response;
+    }
   }  
 }
 
