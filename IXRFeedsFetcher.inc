@@ -27,7 +27,7 @@ class IXRFeedsBatch extends FeedsImportBatch {
     if ($this->service) {
       $client->query($this->service);
       $response = $client->getResponse();
-      return $response;
+      return $response ? $response : array();
     }
   }  
 }
